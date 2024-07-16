@@ -5,11 +5,11 @@ local ptfxGhost = {}
 local holdingCam = false
 local takingPhoto = false
 local fov_max = 80.0
-local fov_min = 5.0 
+local fov_min = 5.0
 local zoomspeed = 10.0
 local speed_lr = 8.0
 local speed_ud = 8.0
-local fov = (fov_max+fov_min)*0.5
+local fov = (fov_max + fov_min) * 0.5
 local cameraProp, PRIEST_PED, pedZone
 
 local function spawnPriest()
@@ -38,6 +38,8 @@ local function spawnPriest()
         distance = 1.3
     })
 end
+
+--
 
 local function yeetPriest()
     if not DoesEntityExist(PRIEST_PED) then return end
@@ -75,7 +77,7 @@ local function toggleCamera(bool)
         local pos = GetEntityCoords(cache.ped)
         local model = `prop_pap_camera_01`
         lib.requestModel(model)
-        cameraProp = CreateObject(model, pos.x, pos.y, pos.z+0.2,  true,  true, true)
+        cameraProp = CreateObject(model, pos.x, pos.y, pos.z + 0.2, true, true, true)
         AttachEntityToEntity(cameraProp, cache.ped, GetPedBoneIndex(cache.ped, 28422), 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, true, true, false, true, 1, true)
         SetModelAsNoLongerNeeded(model)
         RemoveAnimDict('amb@world_human_paparazzi@male@base')
@@ -93,8 +95,8 @@ local function CheckInputRotation(cam, zoomvalue)
     local rightAxisY = GetDisabledControlNormal(0, 221)
     local rotation = GetCamRot(cam, 2)
     if rightAxisX ~= 0.0 or rightAxisY ~= 0.0 then
-        local new_z = rotation.z + rightAxisX*-1.0*(speed_ud)*(zoomvalue+0.1)
-        local new_x = math.max(math.min(20.0, rotation.x + rightAxisY*-1.0*(speed_lr)*(zoomvalue+0.1)), -89.5)
+        local new_z = rotation.z + rightAxisX * -1.0 * (speed_ud) * (zoomvalue + 0.1)
+        local new_x = math.max(math.min(20.0, rotation.x + rightAxisY * -1.0 * (speed_lr) * (zoomvalue + 0.1)), -89.5)
         SetCamRot(cam, new_x, 0.0, new_z, 2)
         if not IsPedSittingInAnyVehicle(cache.ped) then
             SetEntityHeading(cache.ped, new_z)
@@ -105,33 +107,33 @@ end
 local function HandleZoom(cam)
     local lPed = cache.ped
     if not IsPedSittingInAnyVehicle(lPed) then
-        if IsControlJustPressed(0,241) then
+        if IsControlJustPressed(0, 241) then
             PlaySound(-1, "Zoom_In", "MUGSHOT_CHARACTER_CREATION_SOUNDS", false, 0, true)
             fov = math.max(fov - zoomspeed, fov_min)
         end
-        if IsControlJustPressed(0,242) then
+        if IsControlJustPressed(0, 242) then
             PlaySound(-1, "Zoom_Out", "MUGSHOT_CHARACTER_CREATION_SOUNDS", false, 0, true)
             fov = math.min(fov + zoomspeed, fov_max)
         end
         local current_fov = GetCamFov(cam)
-        if math.abs(fov-current_fov) < 0.1 then
+        if math.abs(fov - current_fov) < 0.1 then
             fov = current_fov
         end
-        SetCamFov(cam, current_fov + (fov - current_fov)*0.05)
+        SetCamFov(cam, current_fov + (fov - current_fov) * 0.05)
     else
-        if IsControlJustPressed(0,17) then
+        if IsControlJustPressed(0, 17) then
             PlaySound(-1, "Zoom_In", "MUGSHOT_CHARACTER_CREATION_SOUNDS", false, 0, true)
             fov = math.max(fov - zoomspeed, fov_min)
         end
-        if IsControlJustPressed(0,16) then
+        if IsControlJustPressed(0, 16) then
             PlaySound(-1, "Zoom_Out", "MUGSHOT_CHARACTER_CREATION_SOUNDS", false, 0, true)
             fov = math.min(fov + zoomspeed, fov_max)
         end
         local current_fov = GetCamFov(cam)
-        if math.abs(fov-current_fov) < 0.1 then
+        if math.abs(fov - current_fov) < 0.1 then
             fov = current_fov
         end
-        SetCamFov(cam, current_fov + (fov - current_fov)*0.05)
+        SetCamFov(cam, current_fov + (fov - current_fov) * 0.05)
     end
 end
 
@@ -167,7 +169,7 @@ local function initCamera()
     CallScaleformMethod(scaleform, "OPEN_SHUTTER")
     while not RequestScriptAudioBank("Mugshot_Character_Creator", false, -1) do Wait(0) end
 
-    lib.showTextUI(('**LEFT CLICK** - %s  \n**SCROLL** - %s  \n**BACKSPACE** - %s'):format('Take Photo', 'Zoom In/Out', 'Cancel'), {position = 'left-center'})
+    lib.showTextUI(('**LEFT CLICK** - %s  \n**SCROLL** - %s  \n**BACKSPACE** - %s'):format('Take Photo', 'Zoom In/Out', 'Cancel'), { position = 'left-center' })
     CreateThread(function()
         Wait(100)
 
@@ -237,7 +239,10 @@ function cleanup()
             ghosts[k] = nil
         end
     end
-    if pedZone then pedZone:remove() pedZone = nil end
+    if pedZone then
+        pedZone:remove()
+        pedZone = nil
+    end
     yeetPriest()
     table.wipe(cachedLocations)
     table.wipe(storedPoints)
@@ -262,7 +267,7 @@ local function nearGhost(data)
             lib.requestModel(model)
             ghosts[data.index] = CreateObject(model, v.coords.x, v.coords.y, v.coords.z - 0.85, false, false, false)
             closestGhost = ghosts[data.index]
-            SetEntityHeading(ghosts[data.index], v.coords.w-180.0)
+            SetEntityHeading(ghosts[data.index], v.coords.w - 180.0)
             FreezeEntityPosition(ghosts[data.index], true)
             lib.requestAnimDict('ANIM@SCRIPTED@FREEMODE@IG2_GHOST@')
             PlayEntityAnim(ghosts[data.index], 'float_1', 'ANIM@SCRIPTED@FREEMODE@IG2_GHOST@', 1000.0, true, true, true, 0, 136704)
@@ -297,7 +302,7 @@ local function createGhostSpawns()
             nearby = nearGhost,
             onExit = yeetGhost,
         })
-        storedPoints[#storedPoints+1] = zone
+        storedPoints[#storedPoints + 1] = zone
     end
     pedZone = lib.points.new({
         coords = vec3(-1681.11, -291.01, 50.88),
@@ -321,4 +326,17 @@ end)
 RegisterNetEvent('randol_ghosts:client:useCamera', function()
     if GetInvokingResource() or holdingCam then return end
     initCamera()
+end)
+
+
+-- ps-camera
+RegisterNetEvent('randol_ghosts:client:takePhoto', function()
+    if closestGhost and IsEntityOnScreen(closestGhost) then
+        SetTimeout(500, function()
+            local success, num, amount = lib.callback.await('randol_ghosts:server:ghostCaught', false, GetEntityModel(closestGhost))
+            if num and amount then
+                completedMessage(num, amount)
+            end
+        end)
+    end
 end)

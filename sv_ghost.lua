@@ -113,6 +113,10 @@ AddEventHandler('onResourceStart', function(res)
     end)
 end)
 
+AddEventHandler("ps-camera:CreatePhoto", function()
+    TriggerClientEvent('randol_ghosts:client:takePhoto', source)
+end)
+
 function PlayerHasLoaded(source)
     local src = source
     SetTimeout(2000, function()
